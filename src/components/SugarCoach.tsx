@@ -43,7 +43,7 @@ export const SugarCoach: React.FC = () => {
     return <Info className="w-5 h-5 text-gray-600" />;
   };
 
-  const renderedSections = report.split('\n\n').map((section, idx) => {
+  const renderedSections = report ? report.split('\n\n').map((section, idx) => {
     const lines = section.trim().split('\n');
     if (lines.length === 0) return null;
 
@@ -93,7 +93,7 @@ export const SugarCoach: React.FC = () => {
         </div>
       </motion.div>
     );
-  }).filter(Boolean);
+  }).filter(Boolean) : [];
 
   return (
     <div className="space-y-8">
