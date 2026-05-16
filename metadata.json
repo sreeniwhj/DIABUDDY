@@ -1,0 +1,6 @@
+{
+  "name": "Prameha Nutri & Coach",
+  "description": "Indian-focused diabetes companion. Analyze food photos for glycemic impact and track blood sugar patterns with AI-driven health coaching.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["Image Analysis", "Nutrition Tracking", "Blood Sugar Pattern Analysis"]
+}
