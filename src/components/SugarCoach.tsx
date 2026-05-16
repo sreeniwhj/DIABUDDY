@@ -43,6 +43,58 @@ export const SugarCoach: React.FC = () => {
     return <Info className="w-5 h-5 text-gray-600" />;
   };
 
+  const renderedSections = report.split('\n\n').map((section, idx) => {
+    const lines = section.trim().split('\n');
+    if (lines.length === 0) return null;
+
+    let titleLine = lines[0];
+    let content = lines.slice(1).join('\n');
+
+    // If there's only one line in the section, maybe it's a section header or a short insight
+    if (lines.length === 1 && titleLine) {
+      const emojiMatch = titleLine.match(/[📈🔍🚨💪📋]/);
+      if (emojiMatch) {
+         // It's a header without content in this chunk
+         return null; 
+      }
+      // If it's just a line of text, treat it as content for a generic section
+      content = titleLine;
+      titleLine = "Insights";
+    }
+
+    if (!titleLine) return null;
+
+    return (
+      <motion.div 
+        key={idx}
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: idx * 0.1 }}
+        className="bg-white p-6 rounded-3xl border border-[#E5E5E1] shadow-sm overflow-hidden"
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-gray-50 rounded-xl">
+            {getSectionIcon(titleLine)}
+          </div>
+          <h3 className="font-bold text-sm uppercase tracking-wider text-gray-900">
+            {titleLine.replace(/[📈🔍🚨💪📋]/g, '').trim()}
+          </h3>
+        </div>
+        <div className="text-gray-700 leading-relaxed text-[15px] whitespace-pre-wrap">
+          {content ? (
+            content.split('\n').map((line, lIdx) => (
+              <p key={lIdx} className={line.trim().startsWith('-') ? 'pl-4 relative before:content-["•"] before:absolute before:left-0 before:text-blue-500' : ''}>
+                {line.trim().startsWith('-') ? line.trim().substring(1).trim() : line}
+              </p>
+            ))
+          ) : (
+            <p>No specific details provided.</p>
+          )}
+        </div>
+      </motion.div>
+    );
+  }).filter(Boolean);
+
   return (
     <div className="space-y-8">
       {!report ? (
@@ -119,7 +171,7 @@ export const SugarCoach: React.FC = () => {
         <motion.div 
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="space-y-6"
+          className="space-y-6 pb-20"
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-serif font-bold italic">Coach's Insight</h2>
@@ -131,39 +183,19 @@ export const SugarCoach: React.FC = () => {
             </button>
           </div>
 
-          {report.split('\n\n').map((section, idx) => {
-            const lines = section.split('\n');
-            const titleLine = lines[0];
-            const content = lines.slice(1).join('\n');
-
-            if (!titleLine || !content) return null;
-
-            return (
-              <motion.div 
-                key={idx}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="bg-white p-6 rounded-3xl border border-[#E5E5E1] shadow-sm overflow-hidden"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-gray-50 rounded-xl">
-                    {getSectionIcon(titleLine)}
-                  </div>
-                  <h3 className="font-bold text-sm uppercase tracking-wider text-gray-900">
-                    {titleLine.replace(/[📈🔍🚨💪📋]/g, '').trim()}
-                  </h3>
+          {renderedSections.length > 0 ? renderedSections : (
+            <div className="bg-white p-6 rounded-3xl border border-[#E5E5E1] shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-gray-50 rounded-xl">
+                  <Info className="w-5 h-5 text-blue-600" />
                 </div>
-                <div className="text-gray-700 leading-relaxed text-[15px] whitespace-pre-wrap">
-                  {content.split('\n').map((line, lIdx) => (
-                    <p key={lIdx} className={line.trim().startsWith('-') ? 'pl-4 relative before:content-["•"] before:absolute before:left-0 before:text-blue-500' : ''}>
-                      {line.trim().startsWith('-') ? line.trim().substring(1).trim() : line}
-                    </p>
-                  ))}
-                </div>
-              </motion.div>
-            );
-          })}
+                <h3 className="font-bold text-sm uppercase tracking-wider text-gray-900">Analysis Details</h3>
+              </div>
+              <div className="text-gray-700 leading-relaxed text-[15px] whitespace-pre-wrap">
+                {report}
+              </div>
+            </div>
+          )}
 
           <div className="bg-amber-50 p-6 rounded-3xl border border-amber-100 italic text-amber-800 text-sm">
             Important: I am your companion, not your doctor. Please share this report with your healthcare provider before making any changes to your medication or diet.
