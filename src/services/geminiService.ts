@@ -167,13 +167,18 @@ export async function analyzeMealImage(base64Image: string) {
       model: "gemini-3-flash-preview",
       contents: [
         {
-          inlineData: {
-            mimeType: "image/jpeg",
-            data: base64Image,
-          },
-        },
-        {
-          text: NUTRITION_PROMPT,
+          role: "user",
+          parts: [
+            {
+              inlineData: {
+                mimeType: "image/jpeg",
+                data: base64Image,
+              },
+            },
+            {
+              text: NUTRITION_PROMPT,
+            },
+          ],
         },
       ],
     });
@@ -199,7 +204,16 @@ export async function analyzeBloodSugarPatterns(readingsText: string) {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `${COACH_PROMPT}\n\nUSER DATA:\n${readingsText}`,
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              text: `${COACH_PROMPT}\n\nUSER DATA:\n${readingsText}`,
+            },
+          ],
+        },
+      ],
     });
 
     return response.text;
