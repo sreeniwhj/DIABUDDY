@@ -29,7 +29,7 @@ const analyzeMealHandler = async (req: express.Request, res: express.Response) =
     const openai = getOpenAI();
     
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4o",
       messages: [
         {
           role: "user",
@@ -61,7 +61,7 @@ const analyzePatternsHandler = async (req: express.Request, res: express.Respons
     const openai = getOpenAI();
     
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4o",
       messages: [
         {
           role: "user",
