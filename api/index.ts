@@ -16,7 +16,12 @@ const getOpenAI = () => {
 };
 
 // API Routes
-app.post("/api/analyze-meal", async (req, res) => {
+app.use((req, _res, next) => {
+  console.log(`[API] ${req.method} ${req.url}`);
+  next();
+});
+
+const analyzeMealHandler = async (req: express.Request, res: express.Response) => {
   try {
     const { image, prompt } = req.body;
     if (!image) return res.status(400).json({ error: "Image data is required" });
@@ -46,9 +51,9 @@ app.post("/api/analyze-meal", async (req, res) => {
     console.error("Meal analysis error:", error);
     res.status(500).json({ error: error.message || "Internal server error" });
   }
-});
+};
 
-app.post("/api/analyze-patterns", async (req, res) => {
+const analyzePatternsHandler = async (req: express.Request, res: express.Response) => {
   try {
     const { text, prompt } = req.body;
     if (!text) return res.status(400).json({ error: "Readings text is required" });
@@ -70,6 +75,20 @@ app.post("/api/analyze-patterns", async (req, res) => {
     console.error("Pattern analysis error:", error);
     res.status(500).json({ error: error.message || "Internal server error" });
   }
+};
+
+// Register routes with and without /api prefix for robustness
+app.post("/api/analyze-meal", analyzeMealHandler);
+app.post("/analyze-meal", analyzeMealHandler);
+app.post("/api/analyze-patterns", analyzePatternsHandler);
+app.post("/analyze-patterns", analyzePatternsHandler);
+
+app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+app.get("/health", (req, res) => res.json({ status: "ok" }));
+
+// Catch-all for /api routes to prevent HTML falling through
+app.all("/api/*", (req, res) => {
+  res.status(404).json({ error: `API route not found: ${req.method} ${req.url}` });
 });
 
 export default app;
