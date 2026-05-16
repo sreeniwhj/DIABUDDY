@@ -154,59 +154,60 @@ IMPORTANT RULES:
 - Always remind users this is a companion tool, 
   not a replacement for their doctor`;
 
-function getAI() {
+export async function analyzeMealImage(base64Image: string) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error("GEMINI_API_KEY is not set.");
+    throw new Error("GEMINI_API_KEY is not set. Please check your Secrets in Settings.");
   }
-  return new GoogleGenAI({ apiKey });
-}
 
-export async function analyzeMealImage(base64Image: string) {
-  const ai = getAI();
-  const model = "gemini-3-flash-preview";
-
-  const imagePart = {
-    inlineData: {
-      mimeType: "image/jpeg",
-      data: base64Image,
-    },
-  };
-
-  const textPart = {
-    text: NUTRITION_PROMPT,
-  };
-
+  const ai = new GoogleGenAI({ apiKey });
+  
   try {
     const response = await ai.models.generateContent({
-      model,
-      contents: [{ parts: [imagePart, textPart] }],
+      model: "gemini-3-flash-preview",
+      contents: [
+        {
+          inlineData: {
+            mimeType: "image/jpeg",
+            data: base64Image,
+          },
+        },
+        {
+          text: NUTRITION_PROMPT,
+        },
+      ],
     });
 
     return response.text;
-  } catch (error) {
-    console.error("Gemini API Error (Meal):", error);
+  } catch (error: any) {
+    console.error("Meal analysis error:", error);
+    if (error.message?.includes("API_KEY_INVALID") || error.message?.includes("PERMISSION_DENIED")) {
+      throw new Error("Invalid or search Gemini API key. Please check the Secrets panel in Settings.");
+    }
     throw error;
   }
 }
 
 export async function analyzeBloodSugarPatterns(readingsText: string) {
-  const ai = getAI();
-  const model = "gemini-3-flash-preview";
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not set. Please check your Secrets in Settings.");
+  }
 
-  const textPart = {
-    text: `${COACH_PROMPT}\n\nUSER DATA:\n${readingsText}`,
-  };
+  const ai = new GoogleGenAI({ apiKey });
 
   try {
     const response = await ai.models.generateContent({
-      model,
-      contents: [{ parts: [textPart] }],
+      model: "gemini-3-flash-preview",
+      contents: `${COACH_PROMPT}\n\nUSER DATA:\n${readingsText}`,
     });
 
     return response.text;
-  } catch (error) {
-    console.error("Gemini API Error (Coach):", error);
+  } catch (error: any) {
+    console.error("Pattern analysis error:", error);
+    if (error.message?.includes("API_KEY_INVALID") || error.message?.includes("PERMISSION_DENIED")) {
+      throw new Error("Invalid or search Gemini API key. Please check the Secrets panel in Settings.");
+    }
     throw error;
   }
 }

@@ -52,7 +52,7 @@ export default function App() {
               <ChefHat className="text-white w-5 h-5" />
             </div>
             <h1 className="text-xl font-bold tracking-tight text-emerald-900 leading-none">
-              Prameha<span className="text-emerald-600">Nutri</span>
+              Dia<span className="text-emerald-600">Buddy</span>
             </h1>
           </div>
           
@@ -151,7 +151,7 @@ export default function App() {
       </main>
 
       <footer className="max-w-2xl mx-auto px-6 py-12 text-center text-gray-400 text-xs">
-        <p>© 2026 Prameha Nutri & Coach. Designed for India.</p>
+        <p>© 2026 DiaBuddy. Designed for India.</p>
         <div className="flex justify-center gap-4 mt-2">
           <span className="flex items-center gap-1"><Info className="w-3 h-3" /> Information only</span>
           <span className="flex items-center gap-1"><Activity className="w-3 h-3" /> Pattern based</span>
